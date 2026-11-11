@@ -1,24 +1,23 @@
-# test_processor.py
 from hypothesis import given, strategies as st
-from processor import calculate_paint_gallons, parse_room_dimensions, calculate_total_quote
+from processor import clean_colour_name, room_area, total_wall_area
 
-@given(st.floats(allow_nan=False, allow_infinity=False))
-def test_calculate_paint_gallons_fuzz(area):
+@given(st.text() | st.none())
+def test_clean_colour_name_no_crash(s):
     try:
-        calculate_paint_gallons(area)
+        clean_colour_name(s)
     except Exception as e:
-        assert False, f"calculate_paint_gallons crashed with: {type(e).__name__}: {e}"
+        assert False, f"clean_colour_name crashed with: {type(e).__name__}: {e}"
 
-@given(st.text())
-def test_parse_room_dimensions_fuzz(dim_str):
+@given(st.text() | st.none())
+def test_room_area_no_crash(s):
     try:
-        parse_room_dimensions(dim_str)
+        room_area(s)
     except Exception as e:
-        assert False, f"parse_room_dimensions crashed with: {type(e).__name__}: {e}"
+        assert False, f"room_area crashed with: {type(e).__name__}: {e}"
 
-@given(st.floats(allow_nan=False, allow_infinity=False), st.floats(allow_nan=False, allow_infinity=False))
-def test_calculate_total_quote_fuzz(rate, area):
+@given(st.text() | st.none())
+def test_total_wall_area_no_crash(s):
     try:
-        calculate_total_quote(rate, area)
+        total_wall_area(s)
     except Exception as e:
-        assert False, f"calculate_total_quote crashed with: {type(e).__name__}: {e}"
+        assert False, f"total_wall_area crashed with: {type(e).__name__}: {e}"

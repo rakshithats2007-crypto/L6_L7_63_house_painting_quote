@@ -1,24 +1,67 @@
 # processor.py
 
-def calculate_paint_gallons(area_sqft):
-    """Calculates gallons of paint needed assuming 1 gallon covers 350 sq ft."""
-    return round(area_sqft / 350.0, 2)
+def clean_colour_name(name):
+    """
+    Turns a colour name into a lower-case code, e.g. 'Ocean Blue' -> 'ocean_blue'.
+    Hardened against None and non-string inputs.
+    """
+    if not isinstance(name, str):
+        return ""
+    return name.strip().lower().replace(' ', '_')
 
-def parse_room_dimensions(dim_str):
-    """Parses room dimensions formatted as 'length,width,height'."""
-    parts = dim_str.split(',')
-    return {
-        "length": float(parts[0]),
-        "width": float(parts[1]),
-        "height": float(parts[2])
-    }
+def room_area(text):
+    """
+    Converts 'LENGTHxWIDTH' into an area in square feet.
+    Hardened against None, missing 'x', and non-numeric values.
+    """
+    if not isinstance(text, str) or 'x' not in text.lower():
+        return 0
+    try:
+        parts = text.lower().split('x')
+        if len(parts) != 2:
+            return 0
+        return int(parts[0]) * int(parts[1])
+    except ValueError:
+        return 0
 
-def calculate_total_quote(rate_per_sqft, area_sqft):
-    """Calculates total painting quote."""
-    return rate_per_sqft * area_sqft
+def total_wall_area(text):
+    """
+    Adds up wall areas separated by semicolons.
+    Hardened against None and invalid integer values.
+    """
+    if not isinstance(text, str):
+        return 0
+    total = 0
+    for area in text.split(';'):
+        try:
+            cleaned_area = area.strip()
+            if cleaned_area:
+                total += int(cleaned_area)
+        except ValueError:
+            pass
+    return total
+
+def main():
+    print("==== Running clean_colour_name ====")
+    try:
+        value = input("Enter a paint colour name (e.g. Ocean Blue): ")
+        print("Colour code:", clean_colour_name(value))
+    except Exception as e:
+        print("Error:", e)
+
+    print("\n==== Running room_area ====")
+    try:
+        value = input("Enter room size as LENGTHxWIDTH in feet (e.g. 12x10): ")
+        print("Room area (sq ft):", room_area(value))
+    except Exception as e:
+        print("Error:", e)
+
+    print("\n==== Running total_wall_area ====")
+    try:
+        value = input("Enter wall areas separated by ; (e.g. 120;95;110): ")
+        print("Total wall area (sq ft):", total_wall_area(value))
+    except Exception as e:
+        print("Error:", e)
 
 if __name__ == "__main__":
-    print("Running initial processor demo...")
-    print("Paint for 1400 sq ft:", calculate_paint_gallons(1400))
-    print("Room dimensions:", parse_room_dimensions("12.5,10.0,9.0"))
-    print("Total quote:", calculate_total_quote(2.5, 1400))
+    main()
